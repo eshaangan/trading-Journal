@@ -1,0 +1,11 @@
+Date,Symbol,Type,Size,Entry,Exit,P&L,P&L %,Notes
+2024-04-01,AAPL,Long,5,150.00,155.00,25.00,3.33%,Great earnings momentum
+2024-04-01,TSLA,Short,2,700.00,680.00,40.00,2.86%,Overextended on daily chart
+2024-04-02,MSFT,Long,10,235.50,240.25,47.50,2.02%,Breakout from consolidation
+2024-04-02,AMZN,Long,3,3120.00,3080.00,-120.00,-1.28%,Failed to hold support
+2024-04-03,NVDA,Long,8,510.25,525.75,124.00,3.04%,AI sector momentum
+2024-04-03,META,Short,4,290.50,292.75,-9.00,-0.77%,Resistance rejection failed
+2024-04-04,AMD,Long,15,90.25,94.50,63.75,4.71%,Sector rotation into semiconductors
+2024-04-04,GOOGL,Long,6,2200.00,2230.00,180.00,1.36%,Ad revenue growth
+2024-04-05,JPM,Short,10,142.75,139.50,32.50,2.28%,Banking sector weakness
+2024-04-05,COST,Long,4,345.25,350.50,21.00,1.52%,Solid monthly sales report 

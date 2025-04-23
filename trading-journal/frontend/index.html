@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Journal</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Date picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Trading Journal</h2>
+            </div>
+            <div class="account-selector">
+                <select id="account-select">
+                    <option value="">Select Account</option>
+                </select>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active" data-page="dashboard">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li class="nav-item" data-page="trade-journal">
+                        <i class="fa-solid fa-book"></i>
+                        <span>Trade Journal</span>
+                    </li>
+                    <li class="nav-item" data-page="past-trades">
+                        <i class="fa-solid fa-history"></i>
+                        <span>Past Trades</span>
+                    </li>
+                    <li class="nav-item" data-page="analytics">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Analytics</span>
+                    </li>
+                    <li class="nav-item" data-page="import-data">
+                        <i class="fa-solid fa-file-import"></i>
+                        <span>Import Data</span>
+                    </li>
+                    <li class="nav-item" data-page="settings">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Settings</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <div class="page-title">Dashboard</div>
+                <div class="top-bar-actions">
+                    <button id="add-trade-btn" class="primary-btn">
+                        <i class="fa-solid fa-plus"></i> Add Trade
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Dashboard Page -->
+                <div class="page" id="dashboard-page">
+                    <div class="date-filter">
+                        <input type="text" id="date-range" placeholder="Select date range">
+                    </div>
+                    
+                    <div class="metrics-container">
+                        <div class="metric-card">
+                            <div class="metric-title">Total P&L</div>
+                            <div class="metric-value" id="total-pl">$0.00</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-title">Win Rate</div>
+                            <div class="metric-value" id="win-rate">0%</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-title">Profit Factor</div>
+                            <div class="metric-value" id="profit-factor">0.00</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-title">Avg Trade</div>
+                            <div class="metric-value" id="avg-trade">$0.00</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Performance</h3>
+                        <div class="chart-period-selector">
+                            <button class="chart-period active" data-period="daily">Daily</button>
+                            <button class="chart-period" data-period="weekly">Weekly</button>
+                            <button class="chart-period" data-period="monthly">Monthly</button>
+                        </div>
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                    
+                    <div class="calendar-container">
+                        <h3>Calendar</h3>
+                        <div id="trade-calendar"></div>
+                    </div>
+                </div>
+                
+                <!-- Trade Journal Page -->
+                <div class="page hidden" id="trade-journal-page">
+                    <div class="filters">
+                        <input type="text" id="symbol-filter" placeholder="Filter by symbol">
+                        <select id="type-filter">
+                            <option value="">All Types</option>
+                            <option value="Long">Long</option>
+                            <option value="Short">Short</option>
+                        </select>
+                        <button id="apply-filters-btn" class="secondary-btn">Apply Filters</button>
+                        <button id="clear-filters-btn" class="secondary-btn">Clear Filters</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="trades-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Symbol</th>
+                                    <th>Type</th>
+                                    <th>Size</th>
+                                    <th>Entry</th>
+                                    <th>Exit</th>
+                                    <th>P&L</th>
+                                    <th>P&L %</th>
+                                    <th>Notes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Trade rows will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Past Trades Page -->
+                <div class="page hidden" id="past-trades-page">
+                    <div class="filters">
+                        <input type="text" id="past-symbol-filter" placeholder="Filter by symbol">
+                        <select id="past-account-filter">
+                            <option value="">All Accounts</option>
+                        </select>
+                        <select id="session-filter">
+                            <option value="">All Sessions</option>
+                            <option value="morning">Morning</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="close">Close</option>
+                            <option value="after-hours">After Hours</option>
+                        </select>
+                        <select id="outcome-filter">
+                            <option value="">All Outcomes</option>
+                            <option value="win">Win</option>
+                            <option value="loss">Loss</option>
+                        </select>
+                        <button id="past-apply-filters-btn" class="secondary-btn">Apply Filters</button>
+                        <button id="past-clear-filters-btn" class="secondary-btn">Clear Filters</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table id="past-trades-table">
+                            <thead>
+                                <tr>
+                                    <th>Account</th>
+                                    <th>Symbol</th>
+                                    <th>Date</th>
+                                    <th>Session</th>
+                                    <th>P&L</th>
+                                    <th>Direction</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Past trade rows will be added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Analytics Page -->
+                <div class="page hidden" id="analytics-page">
+                    <div class="chart-container">
+                        <h3>Cumulative P&L</h3>
+                        <canvas id="cumulative-pl-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Win vs Loss Distribution</h3>
+                        <canvas id="win-loss-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Performance by Symbol</h3>
+                        <canvas id="symbol-performance-chart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Performance by Day of Week</h3>
+                        <canvas id="day-performance-chart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Import Data Page -->
+                <div class="page hidden" id="import-data-page">
+                    <div class="import-container">
+                        <h3>Import Trades from CSV</h3>
+                        <p>Upload a CSV file with your trade data. The file should have the following columns:</p>
+                        <pre>Date, Symbol, Type, Size, Entry, Exit, P&L, P&L %, Notes</pre>
+                        
+                        <form id="import-form">
+                            <div class="form-group">
+                                <label for="import-account">Account:</label>
+                                <select id="import-account" required>
+                                    <option value="">Select Account</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="csv-file">CSV File:</label>
+                                <input type="file" id="csv-file" accept=".csv" required>
+                            </div>
+                            <button type="submit" class="primary-btn">Import Trades</button>
+                        </form>
+                        
+                        <div id="import-results" class="hidden">
+                            <h4>Import Results</h4>
+                            <div id="import-message"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Page -->
+                <div class="page hidden" id="settings-page">
+                    <div class="settings-container">
+                        <h3>Account Management</h3>
+                        
+                        <div class="accounts-list">
+                            <h4>Existing Accounts</h4>
+                            <table id="accounts-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Account rows will be added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="add-account-form">
+                            <h4>Add New Account</h4>
+                            <form id="account-form">
+                                <div class="form-group">
+                                    <label for="account-name">Account Name:</label>
+                                    <input type="text" id="account-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="account-description">Description:</label>
+                                    <input type="text" id="account-description">
+                                </div>
+                                <button type="submit" class="primary-btn">Add Account</button>
+                            </form>
+                        </div>
+                        
+                        <div class="theme-settings">
+                            <h3>Theme Settings</h3>
+                            <div class="theme-selector">
+                                <button id="light-theme-btn" class="theme-btn active">Light</button>
+                                <button id="dark-theme-btn" class="theme-btn">Dark</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Add Trade Modal -->
+    <div class="modal" id="add-trade-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Trade</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="trade-form">
+                    <div class="form-group">
+                        <label for="trade-date">Date:</label>
+                        <input type="date" id="trade-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-symbol">Symbol:</label>
+                        <input type="text" id="trade-symbol" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-type">Type:</label>
+                        <select id="trade-type" required>
+                            <option value="Long">Long</option>
+                            <option value="Short">Short</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-size">Size:</label>
+                        <input type="number" id="trade-size" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-entry">Entry:</label>
+                        <input type="number" id="trade-entry" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-exit">Exit:</label>
+                        <input type="number" id="trade-exit" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-pl">P&L:</label>
+                        <input type="number" id="trade-pl" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-pl-percent">P&L %:</label>
+                        <input type="number" id="trade-pl-percent" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-account">Account:</label>
+                        <select id="trade-account" required>
+                            <option value="">Select Account</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-session">Session:</label>
+                        <select id="trade-session">
+                            <option value="">Select Session</option>
+                            <option value="morning">Morning</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="close">Close</option>
+                            <option value="after-hours">After Hours</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="trade-notes">Notes:</label>
+                        <textarea id="trade-notes"></textarea>
+                    </div>
+                    <button type="submit" class="primary-btn">Save Trade</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Trade Modal -->
+    <div class="modal" id="edit-trade-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Trade</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-trade-form">
+                    <input type="hidden" id="edit-trade-id">
+                    <div class="form-group">
+                        <label for="edit-trade-date">Date:</label>
+                        <input type="date" id="edit-trade-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-symbol">Symbol:</label>
+                        <input type="text" id="edit-trade-symbol" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-type">Type:</label>
+                        <select id="edit-trade-type" required>
+                            <option value="Long">Long</option>
+                            <option value="Short">Short</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-size">Size:</label>
+                        <input type="number" id="edit-trade-size" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-entry">Entry:</label>
+                        <input type="number" id="edit-trade-entry" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-exit">Exit:</label>
+                        <input type="number" id="edit-trade-exit" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-pl">P&L:</label>
+                        <input type="number" id="edit-trade-pl" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-pl-percent">P&L %:</label>
+                        <input type="number" id="edit-trade-pl-percent" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-account">Account:</label>
+                        <select id="edit-trade-account" required>
+                            <option value="">Select Account</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-session">Session:</label>
+                        <select id="edit-trade-session">
+                            <option value="">Select Session</option>
+                            <option value="morning">Morning</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="close">Close</option>
+                            <option value="after-hours">After Hours</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-trade-notes">Notes:</label>
+                        <textarea id="edit-trade-notes"></textarea>
+                    </div>
+                    <button type="submit" class="primary-btn">Update Trade</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Account Modal -->
+    <div class="modal" id="edit-account-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Account</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-account-form">
+                    <input type="hidden" id="edit-account-id">
+                    <div class="form-group">
+                        <label for="edit-account-name">Account Name:</label>
+                        <input type="text" id="edit-account-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-account-description">Description:</label>
+                        <input type="text" id="edit-account-description">
+                    </div>
+                    <button type="submit" class="primary-btn">Update Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="delete-confirm-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirm Deletion</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="delete-confirm-message">Are you sure you want to delete this item?</p>
+                <div class="modal-actions">
+                    <button id="delete-confirm-btn" class="danger-btn">Delete</button>
+                    <button id="delete-cancel-btn" class="secondary-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript Files -->
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/trade-journal.js"></script>
+    <script src="js/past-trades.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/import-data.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 
