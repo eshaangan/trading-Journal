@@ -166,32 +166,110 @@ const Utils = {
         const defaultOptions = {
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            },
+            layout: {
+                padding: {
+                    left: 10,
+                    right: 20,
+                    top: 0,
+                    bottom: 10
+                }
+            },
             scales: {
                 x: {
-                    ticks: {
-                        color: isDarkTheme ? '#aaa' : '#666'
-                    },
                     grid: {
-                        color: isDarkTheme ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-                    }
+                        display: true,
+                        drawBorder: true,
+                        color: isDarkTheme ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        color: isDarkTheme ? '#aaa' : '#666',
+                        font: {
+                            size: 11
+                        },
+                        maxRotation: 45,
+                        minRotation: 0
+                    },
                 },
                 y: {
-                    ticks: {
-                        color: isDarkTheme ? '#aaa' : '#666'
-                    },
+                    beginAtZero: false,
                     grid: {
-                        color: isDarkTheme ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-                    }
+                        display: true,
+                        drawBorder: true,
+                        color: isDarkTheme ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        color: isDarkTheme ? '#aaa' : '#666',
+                        font: {
+                            size: 11
+                        },
+                        padding: 8,
+                        callback: function(value) {
+                            // Format currency if y-axis values are large numbers
+                            if (Math.abs(value) >= 1000) {
+                                return '$' + value.toLocaleString();
+                            }
+                            return value;
+                        }
+                    },
                 }
             },
             plugins: {
+                tooltip: {
+                    backgroundColor: isDarkTheme ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+                    titleColor: isDarkTheme ? '#fff' : '#333',
+                    bodyColor: isDarkTheme ? '#ddd' : '#666',
+                    borderColor: isDarkTheme ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                    borderWidth: 1,
+                    cornerRadius: 6,
+                    padding: 10,
+                    displayColors: true,
+                    boxWidth: 8,
+                    boxHeight: 8,
+                    boxPadding: 4,
+                    usePointStyle: true
+                },
                 legend: {
+                    display: type !== 'bar',
                     labels: {
-                        color: isDarkTheme ? '#ddd' : '#333'
+                        color: isDarkTheme ? '#ddd' : '#333',
+                        font: {
+                            size: 12
+                        },
+                        boxWidth: 15,
+                        padding: 15,
+                        usePointStyle: true
                     }
                 }
             }
         };
+        
+        // Add specific options based on chart type
+        if (type === 'bar') {
+            defaultOptions.plugins.legend.display = false;
+            defaultOptions.barPercentage = 0.8;
+            defaultOptions.categoryPercentage = 0.9;
+            defaultOptions.borderRadius = 4;
+        } else if (type === 'line') {
+            defaultOptions.elements = {
+                line: {
+                    tension: 0.3,
+                    borderWidth: 2
+                },
+                point: {
+                    radius: 3,
+                    hoverRadius: 5,
+                    backgroundColor: isDarkTheme ? '#fff' : '#333'
+                }
+            };
+        } else if (type === 'doughnut' || type === 'pie') {
+            defaultOptions.cutout = '50%';
+            defaultOptions.radius = '90%';
+            defaultOptions.plugins.legend.position = 'bottom';
+        }
         
         // Create the chart
         return new Chart(canvas, {

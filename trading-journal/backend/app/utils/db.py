@@ -179,7 +179,7 @@ def delete_account(db, account_id):
     
     # Delete all trades for this account
     trades_query = "DELETE FROM trades WHERE account = :account"
-    db.execute(text(trades_query), {"account": account['name']})
+    db.execute(text(trades_query), {"account": account[0]})
     
     # Delete the account
     account_delete_query = "DELETE FROM accounts WHERE id = :id"

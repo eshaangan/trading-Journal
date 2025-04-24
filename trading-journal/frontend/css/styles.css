@@ -235,21 +235,36 @@ button {
   color: var(--light-text);
 }
 
+#performance-chart {
+  height: 280px;
+  margin-top: 10px;
+}
+
 .chart-container {
   background-color: white;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: var(--box-shadow);
+  height: 350px;
+  position: relative;
 }
 
 .dark-theme .chart-container {
   background-color: var(--light-color);
 }
 
+/* Special styling for dashboard performance chart */
+#dashboard-page .chart-container {
+  height: 320px;
+  margin-bottom: 20px;
+}
+
 .chart-container h3 {
   margin-bottom: 15px;
   color: var(--primary-color);
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .dark-theme .chart-container h3 {
@@ -661,4 +676,18 @@ tr:hover {
 #import-results.error {
   background-color: rgba(231, 76, 60, 0.2);
   border: 1px solid var(--danger-color);
+}
+
+/* Chart grid container for analytics page */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
 } 

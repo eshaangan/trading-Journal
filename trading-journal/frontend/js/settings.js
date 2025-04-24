@@ -181,7 +181,11 @@ const Settings = {
         
         // Set up delete button
         const deleteBtn = document.getElementById('delete-confirm-btn');
-        deleteBtn.onclick = async () => {
+        // Remove any existing event listeners to prevent multiple bindings
+        const newDeleteBtn = deleteBtn.cloneNode(true);
+        deleteBtn.parentNode.replaceChild(newDeleteBtn, deleteBtn);
+        
+        newDeleteBtn.addEventListener('click', async () => {
             try {
                 await Api.deleteAccount(account.id);
                 
@@ -206,7 +210,15 @@ const Settings = {
                 console.error('Error deleting account:', error);
                 Utils.showError('Failed to delete account. Please try again.');
             }
-        };
+        });
+        
+        // Set up cancel button
+        const cancelBtn = document.getElementById('delete-cancel-btn');
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        newCancelBtn.addEventListener('click', () => {
+            Utils.hideModal('delete-confirm-modal');
+        });
         
         // Show modal
         Utils.showModal('delete-confirm-modal');

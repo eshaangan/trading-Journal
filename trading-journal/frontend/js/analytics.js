@@ -63,8 +63,30 @@ const Analytics = {
             datasets: [{
                 label: 'Cumulative P&L',
                 data: data.map(item => item.value),
-                borderColor: '#3498db',
-                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                borderColor: item => item < 0 ? '#e74c3c' : '#2ecc71',
+                borderWidth: 2,
+                backgroundColor: ctx => {
+                    // Create gradient
+                    const chart = ctx.chart;
+                    const {ctx: context, chartArea} = chart;
+                    if (!chartArea) return null;
+                    
+                    // Check if overall trend is positive or negative
+                    const lastValue = data[data.length - 1]?.value || 0;
+                    const gradient = context.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                    
+                    if (lastValue >= 0) {
+                        // Green gradient for positive trend
+                        gradient.addColorStop(0, 'rgba(46, 204, 113, 0.1)');
+                        gradient.addColorStop(1, 'rgba(46, 204, 113, 0.4)');
+                        return gradient;
+                    } else {
+                        // Red gradient for negative trend
+                        gradient.addColorStop(0, 'rgba(231, 76, 60, 0.1)');
+                        gradient.addColorStop(1, 'rgba(231, 76, 60, 0.4)');
+                        return gradient;
+                    }
+                },
                 tension: 0.4,
                 fill: true
             }]
@@ -106,13 +128,26 @@ const Analytics = {
             labels: ['Wins', 'Losses'],
             datasets: [{
                 data: [metrics.win_count, metrics.loss_count],
-                backgroundColor: ['#2ecc71', '#e74c3c']
+                backgroundColor: ['rgba(46, 204, 113, 0.8)', 'rgba(231, 76, 60, 0.8)'],
+                borderColor: ['#27ae60', '#c0392b'],
+                borderWidth: 1,
+                hoverBackgroundColor: ['rgba(46, 204, 113, 1)', 'rgba(231, 76, 60, 1)'],
+                hoverBorderColor: ['#219955', '#a93226'],
+                hoverBorderWidth: 2
             }]
         };
         
         // Chart options
         const options = {
             plugins: {
+                title: {
+                    display: false,
+                    text: 'Win/Loss Ratio',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    }
+                },
                 tooltip: {
                     callbacks: {
                         label: function(context) {
@@ -155,7 +190,11 @@ const Analytics = {
             datasets: [{
                 label: 'P&L',
                 data: topSymbols.map(item => item.pl),
-                backgroundColor: topSymbols.map(item => item.pl >= 0 ? '#2ecc71' : '#e74c3c')
+                backgroundColor: topSymbols.map(item => item.pl >= 0 ? 'rgba(46, 204, 113, 0.7)' : 'rgba(231, 76, 60, 0.7)'),
+                borderColor: topSymbols.map(item => item.pl >= 0 ? '#27ae60' : '#c0392b'),
+                borderWidth: 1,
+                borderRadius: 4,
+                hoverBackgroundColor: topSymbols.map(item => item.pl >= 0 ? 'rgba(46, 204, 113, 0.9)' : 'rgba(231, 76, 60, 0.9)')
             }]
         };
         
@@ -203,7 +242,11 @@ const Analytics = {
             datasets: [{
                 label: 'P&L',
                 data: performanceData.map(item => item.pl),
-                backgroundColor: performanceData.map(item => item.pl >= 0 ? '#2ecc71' : '#e74c3c')
+                backgroundColor: performanceData.map(item => item.pl >= 0 ? 'rgba(46, 204, 113, 0.7)' : 'rgba(231, 76, 60, 0.7)'),
+                borderColor: performanceData.map(item => item.pl >= 0 ? '#27ae60' : '#c0392b'),
+                borderWidth: 1,
+                borderRadius: 4,
+                hoverBackgroundColor: performanceData.map(item => item.pl >= 0 ? 'rgba(46, 204, 113, 0.9)' : 'rgba(231, 76, 60, 0.9)')
             }]
         };
         

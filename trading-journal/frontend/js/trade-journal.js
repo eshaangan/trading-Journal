@@ -231,8 +231,8 @@ const TradeJournal = {
                 <td>${trade.size}</td>
                 <td>${trade.entry}</td>
                 <td>${trade.exit}</td>
-                <td class="${Utils.getPLClass(trade.pl)}">${Utils.formatCurrency(trade.pl)}</td>
-                <td class="${Utils.getPLClass(trade.pl_percent)}">${Utils.formatPercentage(trade.pl_percent)}</td>
+                <td class="${Utils.getPLClass(trade.pl)}">${Utils.formatCurrency(trade.pl, true)}</td>
+                <td class="${Utils.getPLClass(trade.pl_percent)}">${Utils.formatPercentage(trade.pl_percent, true)}</td>
                 <td>${trade.notes || ''}</td>
                 <td>
                     <div class="action-buttons">

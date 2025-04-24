@@ -96,18 +96,13 @@
                     </div>
                     
                     <div class="chart-container">
-                        <h3>Performance</h3>
+                        <h3>Performance Overview</h3>
                         <div class="chart-period-selector">
                             <button class="chart-period active" data-period="daily">Daily</button>
                             <button class="chart-period" data-period="weekly">Weekly</button>
                             <button class="chart-period" data-period="monthly">Monthly</button>
                         </div>
                         <canvas id="performance-chart"></canvas>
-                    </div>
-                    
-                    <div class="calendar-container">
-                        <h3>Calendar</h3>
-                        <div id="trade-calendar"></div>
                     </div>
                 </div>
                 
@@ -192,24 +187,26 @@
                 
                 <!-- Analytics Page -->
                 <div class="page hidden" id="analytics-page">
-                    <div class="chart-container">
-                        <h3>Cumulative P&L</h3>
-                        <canvas id="cumulative-pl-chart"></canvas>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <h3>Win vs Loss Distribution</h3>
-                        <canvas id="win-loss-chart"></canvas>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <h3>Performance by Symbol</h3>
-                        <canvas id="symbol-performance-chart"></canvas>
-                    </div>
-                    
-                    <div class="chart-container">
-                        <h3>Performance by Day of Week</h3>
-                        <canvas id="day-performance-chart"></canvas>
+                    <div class="charts-grid">
+                        <div class="chart-container">
+                            <h3>Cumulative P&L</h3>
+                            <canvas id="cumulative-pl-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>Win vs Loss Distribution</h3>
+                            <canvas id="win-loss-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>Performance by Symbol</h3>
+                            <canvas id="symbol-performance-chart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>Performance by Day of Week</h3>
+                            <canvas id="day-performance-chart"></canvas>
+                        </div>
                     </div>
                 </div>
                 
@@ -466,7 +463,7 @@
                 <p id="delete-confirm-message">Are you sure you want to delete this item?</p>
                 <div class="modal-actions">
                     <button id="delete-confirm-btn" class="danger-btn">Delete</button>
-                    <button id="delete-cancel-btn" class="secondary-btn">Cancel</button>
+                    <button id="delete-cancel-btn" class="secondary-btn" onclick="Utils.hideModal('delete-confirm-modal')">Cancel</button>
                 </div>
             </div>
         </div>
