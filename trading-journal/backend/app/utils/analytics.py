@@ -23,7 +23,14 @@ def calculate_metrics(trades: List[Dict[str, Any]]) -> Dict[str, Any]:
             "consecutive_wins": 0,
             "consecutive_losses": 0,
             "win_count": 0,
-            "loss_count": 0
+            "loss_count": 0,
+            "total_trades": 0,
+            "total_lots": 0,
+            "avg_duration": "N/A",
+            "avg_win": 0,
+            "avg_loss": 0,
+            "best_trade": 0,
+            "worst_trade": 0
         }
     
     # Convert trades to DataFrame for easier manipulation
@@ -40,6 +47,32 @@ def calculate_metrics(trades: List[Dict[str, Any]]) -> Dict[str, Any]:
     win_count = len(df[df['pl'] > 0])
     loss_count = len(df[df['pl'] < 0])
     total_trades = len(df)
+    
+    # Calculate average winning and losing trades
+    winning_trades = df[df['pl'] > 0]['pl']
+    losing_trades = df[df['pl'] < 0]['pl']
+    
+    avg_win = winning_trades.mean() if not winning_trades.empty else 0
+    avg_loss = abs(losing_trades.mean()) if not losing_trades.empty else 0
+    
+    # Calculate best and worst trades
+    best_trade = df['pl'].max() if not df.empty else 0
+    worst_trade = df['pl'].min() if not df.empty else 0
+    
+    # Calculate total lots
+    total_lots = df['lots'].sum() if 'lots' in df.columns else 0
+    
+    # Calculate average duration if available
+    avg_duration = "N/A"
+    if 'duration' in df.columns and not df['duration'].isna().all():
+        try:
+            df['duration'] = pd.to_timedelta(df['duration'])
+            avg_duration_seconds = df['duration'].dt.total_seconds().mean()
+            hours = int(avg_duration_seconds // 3600)
+            minutes = int((avg_duration_seconds % 3600) // 60)
+            avg_duration = f"{hours}h {minutes}m"
+        except:
+            avg_duration = "N/A"
     
     # Win rate
     win_rate = win_count / total_trades if total_trades > 0 else 0
@@ -86,7 +119,14 @@ def calculate_metrics(trades: List[Dict[str, Any]]) -> Dict[str, Any]:
         "consecutive_wins": int(max_consecutive_wins),
         "consecutive_losses": int(max_consecutive_losses),
         "win_count": win_count,
-        "loss_count": loss_count
+        "loss_count": loss_count,
+        "total_trades": total_trades,
+        "total_lots": round(total_lots, 2),
+        "avg_duration": avg_duration,
+        "avg_win": round(avg_win, 2),
+        "avg_loss": round(avg_loss, 2),
+        "best_trade": round(best_trade, 2),
+        "worst_trade": round(worst_trade, 2)
     }
 
 def calculate_performance_by_symbol(trades: List[Dict[str, Any]]) -> Dict[str, Any]:
