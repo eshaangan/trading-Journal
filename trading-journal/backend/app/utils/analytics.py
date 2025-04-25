@@ -261,16 +261,22 @@ def get_calendar_data(trades: List[Dict[str, Any]]) -> Dict[str, Any]:
     # Group trades by date and calculate daily P&L
     daily_pl = df.groupby(df['date'].dt.date)['pl'].sum().round(2)
     
-    # Calculate weekly P&L (week ends on Saturday)
-    df['week_ending'] = df['date'].dt.date + pd.Timedelta(days=(5 - df['date'].dt.dayofweek))
+    # Calculate weekly P&L (week ends on Friday)
+    # Apply a function row by row to calculate the week_ending date
+    df['week_ending'] = df['date'].apply(
+        lambda x: (x.date() + pd.Timedelta(days=(4 - x.dayofweek) if x.dayofweek <= 4 else (11 - x.dayofweek)))
+    )
     weekly_pl = df.groupby('week_ending')['pl'].sum().round(2)
+    
+    # Count trades per day
+    trades_per_day = df.groupby(df['date'].dt.date).size()
     
     # Format the results
     result = {
         'daily': {
             str(date): {
                 'pl': float(pl),
-                'trades': int(len(df[df['date'].dt.date == date])),
+                'trades': int(trades_per_day.get(date, 0)),
                 'class': 'positive' if pl > 0 else 'negative' if pl < 0 else 'neutral'
             }
             for date, pl in daily_pl.items()

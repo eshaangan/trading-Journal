@@ -426,15 +426,37 @@ const Api = {
         }
     },
     
-    async getCalendarData(filters = {}) {
+    /**
+     * Get calendar data for trading calendar view
+     * @param {Object} filters - Filters including account, start_date, end_date
+     * @returns {Promise<Object>} Calendar data with daily and weekly entries
+     */
+    getCalendarData: async function(filters = {}) {
         try {
+            // Build query string from filters
             const queryParams = new URLSearchParams();
-            if (filters.account) queryParams.append('account', filters.account);
-            if (filters.start_date) queryParams.append('start_date', filters.start_date);
-            if (filters.end_date) queryParams.append('end_date', filters.end_date);
             
-            const response = await fetch(`${API_BASE_URL}/api/analytics/calendar?${queryParams}`);
-            if (!response.ok) throw new Error('Failed to fetch calendar data');
+            if (filters.account) {
+                queryParams.append('account', filters.account);
+            }
+            
+            if (filters.start_date) {
+                queryParams.append('start_date', filters.start_date);
+            }
+            
+            if (filters.end_date) {
+                queryParams.append('end_date', filters.end_date);
+            }
+            
+            const queryString = queryParams.toString();
+            const url = `${API_BASE_URL}/api/analytics/calendar${queryString ? `?${queryString}` : ''}`;
+            
+            console.log('Fetching calendar data from:', url);
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
             
             return await response.json();
         } catch (error) {

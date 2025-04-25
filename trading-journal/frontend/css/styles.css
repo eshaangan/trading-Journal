@@ -734,201 +734,263 @@ tr:hover {
 }
 
 .metrics-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
 }
 
 .metric-card.small {
-  padding: 12px;
-  min-height: 80px;
+  padding: 16px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .metric-card.small .metric-title {
-  font-size: 0.8rem;
-  margin-bottom: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+  z-index: 2;
 }
 
 .metric-card.small .metric-value {
-  font-size: 1rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  z-index: 2;
 }
 
-.dark-theme .metric-card.small {
-  background-color: var(--light-color);
-}
-
-.metric-card.small:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-}
-
-.full-width-chart {
-  height: 400px;
-  grid-column: 1 / -1;
-  margin-bottom: 20px;
-}
-
-.trading-calendar {
-  background-color: white;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: var(--box-shadow);
-}
-
-.dark-theme .trading-calendar {
-  background-color: var(--light-color);
-}
-
-.date-selector {
+.metric-card.small .metric-trend {
+  font-size: 0.85rem;
+  color: #777;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.date-selector-controls {
-  display: flex;
-  gap: 10px;
-}
-
-.date-selector-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  margin-top: 15px;
-}
-
-.calendar-day-header {
-  text-align: center;
-  font-weight: 600;
-  color: var(--text-color);
-  padding: 5px;
-  font-size: 0.9rem;
-}
-
-.calendar-day {
-  aspect-ratio: 1;
-  border-radius: 8px;
-  padding: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
   gap: 4px;
-  background-color: var(--light-color);
-  border: 1px solid var(--border-color);
+  z-index: 2;
 }
 
-.dark-theme .calendar-day {
-  background-color: var(--primary-color);
-  border-color: #444;
-}
-
-.calendar-day:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--box-shadow);
-}
-
-.calendar-day.empty {
-  background-color: transparent;
-  border: none;
-  cursor: default;
-}
-
-.calendar-day.empty:hover {
-  transform: none;
-  box-shadow: none;
-}
-
-.calendar-day-number {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.calendar-day-pl {
-  font-size: 0.85rem;
-  font-weight: 500;
-  text-align: right;
-}
-
-.calendar-day-trades {
-  font-size: 0.75rem;
-  color: var(--text-color);
-  opacity: 0.8;
-  text-align: right;
-  margin-top: auto;
-}
-
-.calendar-day.positive {
-  background-color: rgba(46, 204, 113, 0.1);
-  border-color: var(--accent-color);
-}
-
-.calendar-day.negative {
-  background-color: rgba(231, 76, 60, 0.1);
-  border-color: var(--danger-color);
-}
-
-.dark-theme .calendar-day.positive {
-  background-color: rgba(46, 204, 113, 0.2);
-}
-
-.dark-theme .calendar-day.negative {
-  background-color: rgba(231, 76, 60, 0.2);
-}
-
-.calendar-day.positive .calendar-day-pl {
+.metric-card.small .trend-up {
   color: var(--accent-color);
 }
 
-.calendar-day.negative .calendar-day-pl {
+.metric-card.small .trend-down {
   color: var(--danger-color);
 }
 
-.calendar-day.neutral {
-  background-color: var(--light-color);
-  border-color: var(--border-color);
+.metric-card.small:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
-.dark-theme .calendar-day.neutral {
+.dark-theme .metric-card.small {
   background-color: var(--primary-color);
-  border-color: #444;
 }
 
-/* Responsive calendar */
-@media screen and (max-width: 768px) {
-  .calendar-grid {
+.dark-theme .metric-card.small .metric-title {
+  color: #aaa;
+}
+
+/* Metric card backgrounds with gradients */
+.metric-card.small.positive {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.05) 0%, rgba(46, 204, 113, 0.15) 100%);
+  border-left: 3px solid var(--accent-color);
+}
+
+.metric-card.small.negative {
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.05) 0%, rgba(231, 76, 60, 0.15) 100%);
+  border-left: 3px solid var(--danger-color);
+}
+
+.metric-card.small.neutral {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.15) 100%);
+  border-left: 3px solid var(--secondary-color);
+}
+
+/* Mini-chart container */
+.mini-chart-container {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100px;
+  height: 40px;
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.metric-card.small:hover .mini-chart-container {
+  opacity: 0.7;
+}
+
+/* Sparkline styles */
+.sparkline {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sparkline path {
+  stroke-width: 2;
+  fill: none;
+}
+
+.sparkline.positive path {
+  stroke: var(--accent-color);
+}
+
+.sparkline.negative path {
+  stroke: var(--danger-color);
+}
+
+.sparkline.neutral path {
+  stroke: var(--secondary-color);
+}
+
+.sparkline-fill {
+  opacity: 0.2;
+}
+
+.sparkline-fill.positive {
+  fill: var(--accent-color);
+}
+
+.sparkline-fill.negative {
+  fill: var(--danger-color);
+}
+
+.sparkline-fill.neutral {
+  fill: var(--secondary-color);
+}
+
+/* Trading Calendar Styles */
+.trading-calendar {
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.date-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.date-selector-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.date-selector-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-color);
+    padding: 5px;
+    font-size: 0.9rem;
+}
+
+.calendar-day {
+    min-height: 80px;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
     gap: 4px;
-  }
-  
-  .calendar-day {
-    padding: 4px;
-  }
-  
-  .calendar-day-number {
-    font-size: 0.8rem;
-  }
-  
-  .calendar-day-pl {
-    font-size: 0.75rem;
-  }
-  
-  .calendar-day-trades {
-    font-size: 0.7rem;
-  }
+    background-color: var(--light-color);
+    border: 1px solid var(--border-color);
 }
 
-/* Calendar Loading and Error States */
+.dark-theme .calendar-day {
+    background-color: var(--primary-color);
+    border-color: #444;
+}
+
+.calendar-day:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+}
+
+.calendar-day.empty {
+    background-color: transparent;
+    border: none;
+    cursor: default;
+}
+
+.calendar-day.empty:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.calendar-day-number {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.calendar-day-pl {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: right;
+}
+
+.calendar-day-pl.positive {
+    color: var(--accent-color);
+}
+
+.calendar-day-pl.negative {
+    color: var(--danger-color);
+}
+
+.calendar-day-trades {
+    font-size: 0.75rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    text-align: right;
+    margin-top: auto;
+}
+
+.calendar-day.positive {
+    background-color: rgba(46, 204, 113, 0.1);
+    border-color: var(--accent-color);
+}
+
+.calendar-day.negative {
+    background-color: rgba(231, 76, 60, 0.1);
+    border-color: var(--danger-color);
+}
+
+.dark-theme .calendar-day.positive {
+    background-color: rgba(46, 204, 113, 0.2);
+}
+
+.dark-theme .calendar-day.negative {
+    background-color: rgba(231, 76, 60, 0.2);
+}
+
+/* Loading and Error States */
 .loading-spinner {
     text-align: center;
     padding: 20px;
@@ -962,4 +1024,62 @@ tr:hover {
     to {
         transform: rotate(360deg);
     }
+}
+
+/* Weekly summary in the calendar */
+.calendar-day.weekly {
+    background-color: rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(52, 152, 219, 0.5);
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-day.weekly:hover {
+    background-color: rgba(52, 152, 219, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-day.weekly .calendar-day-number {
+    font-weight: 700;
+    background-color: rgba(52, 152, 219, 0.2);
+    color: #2c3e50;
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-bottom: 3px;
+}
+
+.calendar-day.weekly .calendar-day-trades {
+    font-size: 0.8rem;
+    color: #2c3e50;
+}
+
+.calendar-day.weekly.positive {
+    background-color: rgba(46, 204, 113, 0.15);
+    border-color: rgba(46, 204, 113, 0.6);
+}
+
+.calendar-day.weekly.negative {
+    background-color: rgba(231, 76, 60, 0.15);
+    border-color: rgba(231, 76, 60, 0.6);
+}
+
+.dark-theme .calendar-day.weekly {
+    background-color: rgba(52, 152, 219, 0.2);
+    border-color: rgba(52, 152, 219, 0.6);
+}
+
+.dark-theme .calendar-day.weekly .calendar-day-number {
+    background-color: rgba(52, 152, 219, 0.3);
+    color: #ecf0f1;
+}
+
+.dark-theme .calendar-day.weekly .calendar-day-trades {
+    color: #ecf0f1;
+}
+
+.dark-theme .calendar-day.weekly.positive {
+    background-color: rgba(46, 204, 113, 0.2);
+    border-color: rgba(46, 204, 113, 0.7);
 } 
