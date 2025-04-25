@@ -34,6 +34,9 @@ function initApp() {
     
     // Load accounts
     loadAccounts();
+    
+    // Initialize theme toggle
+    initThemeToggle();
 }
 
 /**
@@ -241,4 +244,57 @@ function populateAccountSelectors(accounts) {
             }
         });
     }
+}
+
+// Theme Toggle
+function initThemeToggle() {
+    const storedTheme = localStorage.getItem('theme') || 'light';
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    // Apply stored theme on page load
+    if (storedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+    
+    // Create theme toggle if it doesn't exist
+    if (!themeToggle) {
+        const topBar = document.querySelector('.top-bar');
+        if (topBar) {
+            const themeBtn = document.createElement('button');
+            themeBtn.id = 'theme-toggle';
+            themeBtn.className = 'theme-toggle-btn';
+            themeBtn.innerHTML = storedTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            themeBtn.setAttribute('aria-label', 'Toggle dark mode');
+            themeBtn.addEventListener('click', toggleTheme);
+            
+            topBar.appendChild(themeBtn);
+        }
+    }
+}
+
+function toggleTheme() {
+    const body = document.body;
+    const isDark = body.classList.contains('dark-theme');
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    body.classList.add('theme-transition');
+    
+    if (isDark) {
+        body.classList.remove('dark-theme');
+        localStorage.setItem('theme', 'light');
+        if (themeToggle) {
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+    } else {
+        body.classList.add('dark-theme');
+        localStorage.setItem('theme', 'dark');
+        if (themeToggle) {
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    }
+    
+    // Remove transition class after transition completes
+    setTimeout(() => {
+        body.classList.remove('theme-transition');
+    }, 500);
 } 

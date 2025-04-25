@@ -264,16 +264,12 @@ const Analytics = {
         this.updateMetricCard('analytics-total-pl', Utils.formatCurrency(actualMetrics.total_pl), 
             actualMetrics.total_pl >= 0 ? 'positive' : 'negative',
             {
-                trend: actualMetrics.total_pl > 0 ? 'up' : 'down',
-                trendValue: '5% from last week',
                 sparklineData: this.generateSparklineData(7, actualMetrics.total_pl > 0)
             });
         
         this.updateMetricCard('analytics-win-rate', `${actualMetrics.win_rate}%`, 
             actualMetrics.win_rate >= 60 ? 'positive' : actualMetrics.win_rate >= 40 ? 'neutral' : 'negative',
             {
-                trend: actualMetrics.win_rate >= 50 ? 'up' : 'down',
-                trendValue: '2% from last week',
                 sparklineData: this.generateSparklineData(7, actualMetrics.win_rate >= 50)
             });
         
@@ -294,8 +290,6 @@ const Analytics = {
         this.updateMetricCard('analytics-profit-factor', actualMetrics.profit_factor.toFixed(2), 
             actualMetrics.profit_factor >= 1.5 ? 'positive' : actualMetrics.profit_factor >= 1 ? 'neutral' : 'negative',
             {
-                trend: actualMetrics.profit_factor >= 1 ? 'up' : 'down',
-                trendValue: '0.1 from last week',
                 sparklineData: this.generateSparklineData(7, actualMetrics.profit_factor >= 1)
             });
         
@@ -393,6 +387,20 @@ const Analytics = {
         // Get the parent card
         const cardElement = element.closest('.metric-card');
         if (cardElement) {
+            // Remove previous type classes and special elements
+            cardElement.classList.remove('positive', 'negative', 'neutral');
+            
+            // Remove any existing trend indicators and mini-charts
+            const existingTrend = cardElement.querySelector('.metric-trend');
+            if (existingTrend) {
+                existingTrend.remove();
+            }
+            
+            const existingChart = cardElement.querySelector('.mini-chart-container');
+            if (existingChart) {
+                existingChart.remove();
+            }
+            
             // Add the type class to the card
             cardElement.classList.add(type);
             
