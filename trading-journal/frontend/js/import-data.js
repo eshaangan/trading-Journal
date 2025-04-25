@@ -53,6 +53,12 @@ const ImportData = {
                 // Reload data
                 await Dashboard.loadData();
                 await TradeJournal.loadTrades();
+                
+                // Refresh the analytics data if Analytics module exists
+                if (Analytics) {
+                    Analytics.loadData();
+                    console.log('Refreshing analytics data after CSV import');
+                }
             } catch (error) {
                 console.error('Error importing trades:', error);
                 

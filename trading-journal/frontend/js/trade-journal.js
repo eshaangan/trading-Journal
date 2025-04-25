@@ -4,6 +4,8 @@
 const TradeJournal = {
     // Cache for trades data
     tradesData: [],
+    // Date range picker instance
+    dateRangePicker: null,
     
     /**
      * Initialize the trade journal
@@ -12,6 +14,7 @@ const TradeJournal = {
         this.setupTradeForm();
         this.setupEditTradeForm();
         this.setupFilters();
+        this.setupDateRangePicker();
     },
     
     /**
@@ -168,8 +171,42 @@ const TradeJournal = {
             document.getElementById('symbol-filter').value = '';
             document.getElementById('type-filter').value = '';
             
+            // Reset date range picker if it exists
+            if (this.dateRangePicker) {
+                const defaultDates = [
+                    new Date(new Date().setDate(new Date().getDate() - 30)), // 30 days ago
+                    new Date() // Today
+                ];
+                this.dateRangePicker.setDate(defaultDates);
+            }
+            
             this.loadTrades();
         });
+    },
+    
+    /**
+     * Set up date range picker
+     */
+    setupDateRangePicker: function() {
+        const dateRangeInput = document.getElementById('trade-date-range');
+        
+        if (dateRangeInput) {
+            // Initialize flatpickr
+            this.dateRangePicker = flatpickr(dateRangeInput, {
+                mode: 'range',
+                dateFormat: 'Y-m-d',
+                maxDate: 'today',
+                defaultDate: [
+                    new Date(new Date().setDate(new Date().getDate() - 30)), // 30 days ago
+                    new Date() // Today
+                ],
+                onChange: (selectedDates, dateStr) => {
+                    if (selectedDates.length === 2) {
+                        this.loadTrades();
+                    }
+                }
+            });
+        }
     },
     
     /**
@@ -180,11 +217,14 @@ const TradeJournal = {
             const selectedAccount = sessionStorage.getItem('selectedAccount') || '';
             const symbolFilter = document.getElementById('symbol-filter').value;
             const typeFilter = document.getElementById('type-filter').value;
+            const dateRange = this.dateRangePicker?.selectedDates || [];
             
             const filters = {
                 account: selectedAccount,
                 symbol: symbolFilter,
-                type: typeFilter
+                type: typeFilter,
+                start_date: dateRange.length > 0 ? dateRange[0].toISOString().split('T')[0] : null,
+                end_date: dateRange.length > 1 ? dateRange[1].toISOString().split('T')[0] : null
             };
             
             // Get trades

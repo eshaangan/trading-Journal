@@ -29,7 +29,7 @@ const Dashboard = {
                 dateFormat: 'Y-m-d',
                 maxDate: 'today',
                 defaultDate: [
-                    new Date(new Date().getFullYear(), new Date().getMonth(), 1), // First day of current month
+                    new Date(new Date().setDate(new Date().getDate() - 30)), // 30 days ago
                     new Date() // Today
                 ],
                 onChange: (selectedDates, dateStr) => {

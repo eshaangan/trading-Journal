@@ -4,12 +4,15 @@
 const PastTrades = {
     // Cache for trades data
     tradesData: [],
+    // Date range picker instance
+    dateRangePicker: null,
     
     /**
      * Initialize the past trades module
      */
     init: function() {
         this.setupFilters();
+        this.setupDateRangePicker();
     },
     
     /**
@@ -29,8 +32,42 @@ const PastTrades = {
             document.getElementById('session-filter').value = '';
             document.getElementById('outcome-filter').value = '';
             
+            // Reset date range picker if it exists
+            if (this.dateRangePicker) {
+                const defaultDates = [
+                    new Date(new Date().setDate(new Date().getDate() - 30)), // 30 days ago
+                    new Date() // Today
+                ];
+                this.dateRangePicker.setDate(defaultDates);
+            }
+            
             this.loadTrades();
         });
+    },
+    
+    /**
+     * Set up date range picker
+     */
+    setupDateRangePicker: function() {
+        const dateRangeInput = document.getElementById('past-date-range');
+        
+        if (dateRangeInput) {
+            // Initialize flatpickr
+            this.dateRangePicker = flatpickr(dateRangeInput, {
+                mode: 'range',
+                dateFormat: 'Y-m-d',
+                maxDate: 'today',
+                defaultDate: [
+                    new Date(new Date().setDate(new Date().getDate() - 30)), // 30 days ago
+                    new Date() // Today
+                ],
+                onChange: (selectedDates, dateStr) => {
+                    if (selectedDates.length === 2) {
+                        this.loadTrades();
+                    }
+                }
+            });
+        }
     },
     
     /**
@@ -42,6 +79,7 @@ const PastTrades = {
             const accountFilter = document.getElementById('past-account-filter').value;
             const sessionFilter = document.getElementById('session-filter').value;
             const outcomeFilter = document.getElementById('outcome-filter').value;
+            const dateRange = this.dateRangePicker?.selectedDates || [];
             
             // Prepare filters
             const filters = {};
@@ -52,6 +90,14 @@ const PastTrades = {
             
             if (symbolFilter) {
                 filters.symbol = symbolFilter;
+            }
+            
+            if (dateRange.length > 0) {
+                filters.start_date = dateRange[0].toISOString().split('T')[0];
+            }
+            
+            if (dateRange.length > 1) {
+                filters.end_date = dateRange[1].toISOString().split('T')[0];
             }
             
             // Get all trades (basic filters at API level)
