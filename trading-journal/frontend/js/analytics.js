@@ -7,7 +7,6 @@ const Analytics = {
     winLossChart: null,
     symbolPerformanceChart: null,
     dayPerformanceChart: null,
-    accountBalanceChart: null,
     durationDistributionChart: null,
     winRateByDurationChart: null,
     
@@ -19,8 +18,10 @@ const Analytics = {
      * Initialize the analytics module
      */
     init: function() {
+        console.log('Initializing Analytics module...');
         this.setupDateRangePicker();
         this.setupCalendarControls();
+        this.updateCalendarView(); // Add initial calendar update
     },
     
     /**
@@ -42,6 +43,7 @@ const Analytics = {
                 onChange: (selectedDates, dateStr) => {
                     if (selectedDates.length === 2) {
                         this.loadData();
+                        this.updateCalendarView(); // Update calendar when date range changes
                     }
                 }
             });
@@ -114,7 +116,6 @@ const Analytics = {
             this.updateWinLossChart(metrics);
             this.updateSymbolPerformanceChart(symbolPerformance);
             this.updateDayPerformanceChart(dayPerformance);
-            this.updateAccountBalanceChart(cumulativePL);
             
             // Create mock data for new charts (replace with real data when available)
             this.updateDurationDistributionChart(this.getMockDurationData());
@@ -334,80 +335,6 @@ const Analytics = {
         
         // Create or update chart
         this.cumulativePLChart = Utils.createChart('cumulative-pl-chart', 'line', chartData, options);
-    },
-    
-    /**
-     * Update account balance chart
-     * @param {Array} data - Cumulative P&L data
-     */
-    updateAccountBalanceChart: function(data) {
-        // Sort data by date
-        data.sort((a, b) => new Date(a.date) - new Date(b.date));
-        
-        // Starting balance (this would come from account settings in a real app)
-        const startingBalance = 10000;
-        
-        // Calculate daily balance
-        let balance = startingBalance;
-        const balanceData = data.map(item => {
-            // We're simulating daily changes rather than cumulative
-            // In a real implementation, you'd use actual daily P&L values
-            const dailyChange = item.value > balance ? item.value - balance : item.value;
-            balance += dailyChange;
-            return {
-                date: item.date,
-                balance: balance
-            };
-        });
-        
-        // Prepare chart data
-        const chartData = {
-            labels: balanceData.map(item => Utils.formatDate(item.date)),
-            datasets: [{
-                label: 'Account Balance',
-                data: balanceData.map(item => item.balance),
-                borderColor: '#3498db',
-                borderWidth: 2,
-                backgroundColor: ctx => {
-                    // Create gradient
-                    const chart = ctx.chart;
-                    const {ctx: context, chartArea} = chart;
-                    if (!chartArea) return null;
-                    
-                    const gradient = context.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                    gradient.addColorStop(0, 'rgba(52, 152, 219, 0.05)');
-                    gradient.addColorStop(1, 'rgba(52, 152, 219, 0.3)');
-                    return gradient;
-                },
-                tension: 0.4,
-                fill: true
-            }]
-        };
-        
-        // Chart options
-        const options = {
-            scales: {
-                y: {
-                    ticks: {
-                        callback: function(value) {
-                            return Utils.formatCurrency(value);
-                        }
-                    }
-                }
-            },
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `Balance: ${Utils.formatCurrency(context.raw)}`;
-                        }
-                    }
-                }
-            }
-        };
-        
-        // Create or update chart
-        this.accountBalanceChart = Utils.createChart('account-balance-chart', 'line', chartData, options);
     },
     
     /**
@@ -668,111 +595,87 @@ const Analytics = {
     /**
      * Update calendar view
      */
-    updateCalendarView: function() {
-        // Update month title
-        const monthYearTitle = this.currentDate.toLocaleDateString('en-US', {
-            month: 'long',
-            year: 'numeric'
-        });
-        document.getElementById('calendar-month-title').textContent = monthYearTitle;
-        
-        // Get calendar grid
-        const calendarGrid = document.getElementById('trading-calendar-grid');
-        if (!calendarGrid) return;
-        
-        // Clear existing calendar
-        calendarGrid.innerHTML = '';
-        
-        // Get first day of month and number of days
-        const year = this.currentDate.getFullYear();
-        const month = this.currentDate.getMonth();
-        const firstDay = new Date(year, month, 1);
-        const lastDay = new Date(year, month + 1, 0);
-        const daysInMonth = lastDay.getDate();
-        
-        // Create day headers (Sun-Sat)
-        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        dayNames.forEach(day => {
-            const dayHeader = document.createElement('div');
-            dayHeader.className = 'calendar-day-header';
-            dayHeader.textContent = day;
-            calendarGrid.appendChild(dayHeader);
-        });
-        
-        // Add empty cells for days before first day of month
-        const firstDayOfWeek = firstDay.getDay();
-        for (let i = 0; i < firstDayOfWeek; i++) {
-            const emptyDay = document.createElement('div');
-            emptyDay.className = 'calendar-day empty';
-            calendarGrid.appendChild(emptyDay);
+    updateCalendarView: async function() {
+        const calendarGrid = document.getElementById('calendar-grid');
+        if (!calendarGrid) {
+            console.error('Calendar grid element not found');
+            return;
         }
-        
-        // Generate mock data for the month (replace with real data when available)
-        const mockDailyData = this.getMockMonthlyCalendarData(year, month, daysInMonth);
-        
-        // Add days of the month
-        for (let day = 1; day <= daysInMonth; day++) {
-            const date = new Date(year, month, day);
-            const dayOfWeek = date.getDay();
-            
-            // Create day element
-            const dayEl = document.createElement('div');
-            dayEl.className = 'calendar-day';
-            
-            // Get data for this day
-            const dayData = mockDailyData[day - 1];
-            if (dayData) {
-                // Add P&L class
-                if (dayData.pl > 0) {
-                    dayEl.classList.add('positive');
-                } else if (dayData.pl < 0) {
-                    dayEl.classList.add('negative');
-                } else {
-                    dayEl.classList.add('neutral');
-                }
-                
-                // Add weekend class for Saturday (which shows weekly summary)
-                if (dayOfWeek === 6) {
-                    dayEl.classList.add('weekly-summary');
-                }
-                
-                // Day content
-                dayEl.innerHTML = `
-                    <div class="calendar-day-header">
-                        <span>${day}</span>
-                        <span>${dayData.trades}</span>
-                    </div>
-                    <div class="calendar-day-content">
-                        ${Utils.formatCurrency(dayData.pl)}
-                    </div>
-                    <div class="calendar-day-footer">
-                        ${dayData.winRate}%
-                    </div>
-                `;
-                
-                // Add click event to view day details
-                dayEl.addEventListener('click', () => {
-                    this.selectedDay = date;
-                    alert(`Detailed view for ${date.toLocaleDateString()} would be shown here.`);
-                });
-            } else {
-                // Empty day (no trades)
-                dayEl.classList.add('neutral');
-                dayEl.innerHTML = `
-                    <div class="calendar-day-header">
-                        <span>${day}</span>
-                        <span>0</span>
-                    </div>
-                    <div class="calendar-day-content">
-                        $0
-                    </div>
-                    <div class="calendar-day-footer">
-                        -
-                    </div>
-                `;
+
+        try {
+            // Show loading state
+            calendarGrid.innerHTML = '<div class="loading-spinner">Loading calendar data...</div>';
+
+            // Validate selected account
+            const selectedAccount = document.getElementById('account-select').value;
+            if (!selectedAccount) {
+                throw new Error('Please select an account to view the calendar');
             }
+
+            // Fetch calendar data
+            console.log('Fetching calendar data for account:', selectedAccount);
+            const calendarData = await Api.getCalendarData(selectedAccount);
             
-            calendarGrid.appendChild(dayEl);
+            // Validate calendar data
+            if (!calendarData || !Array.isArray(calendarData)) {
+                throw new Error('Invalid calendar data received from server');
+            }
+
+            // Clear previous content
+            calendarGrid.innerHTML = '';
+
+            // Process and display calendar data
+            calendarData.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                // Validate day data
+                if (!day.date || typeof day.pl !== 'number') {
+                    console.warn('Invalid day data:', day);
+                    return;
+                }
+
+                // Format date
+                const date = new Date(day.date);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                // Format P&L with color coding
+                const plClass = day.pl >= 0 ? 'positive' : 'negative';
+                const formattedPL = new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD'
+                }).format(day.pl);
+
+                // Build day element content
+                dayElement.innerHTML = `
+                    <div class="date">${formattedDate}</div>
+                    <div class="pl ${plClass}">${formattedPL}</div>
+                    <div class="trades">${day.trades || 0} trades</div>
+                `;
+
+                // Add hover effect with more details
+                dayElement.title = `
+                    Date: ${date.toLocaleDateString()}
+                    P&L: ${formattedPL}
+                    Trades: ${day.trades || 0}
+                    Win Rate: ${((day.winRate || 0) * 100).toFixed(1)}%
+                `;
+
+                calendarGrid.appendChild(dayElement);
+            });
+
+        } catch (error) {
+            console.error('Error updating calendar view:', error);
+            calendarGrid.innerHTML = `
+                <div class="error-message">
+                    ${error.message || 'An error occurred while loading the calendar data'}
+                    <br>
+                    <small>Please try again or contact support if the problem persists.</small>
+                </div>
+            `;
         }
     },
     

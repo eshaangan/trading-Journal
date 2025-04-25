@@ -234,4 +234,55 @@ def get_cumulative_pl_data(trades: List[Dict[str, Any]]) -> List[Dict[str, Any]]
             "value": round(row['cumulative_pl'], 2)
         })
     
+    return result
+
+def get_calendar_data(trades: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Get daily and weekly P&L data for the calendar.
+    
+    Args:
+        trades: List of trade dictionaries
+        
+    Returns:
+        Dictionary containing daily P&L and weekly summaries
+    """
+    if not trades:
+        return {}
+    
+    # Convert trades to DataFrame
+    df = pd.DataFrame(trades)
+    
+    # Convert date strings to datetime objects
+    df['date'] = pd.to_datetime(df['date'])
+    
+    # Sort by date
+    df = df.sort_values('date')
+    
+    # Group trades by date and calculate daily P&L
+    daily_pl = df.groupby(df['date'].dt.date)['pl'].sum().round(2)
+    
+    # Calculate weekly P&L (week ends on Saturday)
+    df['week_ending'] = df['date'].dt.date + pd.Timedelta(days=(5 - df['date'].dt.dayofweek))
+    weekly_pl = df.groupby('week_ending')['pl'].sum().round(2)
+    
+    # Format the results
+    result = {
+        'daily': {
+            str(date): {
+                'pl': float(pl),
+                'trades': int(len(df[df['date'].dt.date == date])),
+                'class': 'positive' if pl > 0 else 'negative' if pl < 0 else 'neutral'
+            }
+            for date, pl in daily_pl.items()
+        },
+        'weekly': {
+            str(date): {
+                'pl': float(pl),
+                'trades': int(len(df[df['week_ending'] == date])),
+                'class': 'positive' if pl > 0 else 'negative' if pl < 0 else 'neutral'
+            }
+            for date, pl in weekly_pl.items()
+        }
+    }
+    
     return result 

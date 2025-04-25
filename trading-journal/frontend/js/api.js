@@ -424,5 +424,22 @@ const Api = {
             console.error('Error fetching cumulative P&L:', error);
             throw error;
         }
+    },
+    
+    async getCalendarData(filters = {}) {
+        try {
+            const queryParams = new URLSearchParams();
+            if (filters.account) queryParams.append('account', filters.account);
+            if (filters.start_date) queryParams.append('start_date', filters.start_date);
+            if (filters.end_date) queryParams.append('end_date', filters.end_date);
+            
+            const response = await fetch(`${API_BASE_URL}/api/analytics/calendar?${queryParams}`);
+            if (!response.ok) throw new Error('Failed to fetch calendar data');
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching calendar data:', error);
+            throw error;
+        }
     }
 }; 
