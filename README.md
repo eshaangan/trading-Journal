@@ -2,8 +2,6 @@
 
 A comprehensive full-stack trading journal application built with Python (FastAPI) and JavaScript, designed to help traders track and analyze their trading performance.
 
-![Trading Journal Dashboard](screenshots/dashboard.png)
-
 ## Features
 
 ### Dashboard
@@ -121,16 +119,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Screenshots
-
-### Dashboard
-![Dashboard](screenshots/dashboard.png)
-
-### Analytics
-![Analytics](screenshots/analytics.png)
-
-### Trade Entry
-![Trade Entry](screenshots/trade-entry.png)
-
-Note: Replace `screenshots/*.png` with actual screenshots of your application. 
