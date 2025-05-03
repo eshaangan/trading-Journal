@@ -95,6 +95,23 @@ To use the sample data:
 2. Click on "Choose File" and select `fundedtest.csv`
 3. Click "Import" to load the sample trades
 
+## CSV Import Format
+
+The application expects CSV files with the following columns:
+
+| Column   | Description                              |
+|----------|------------------------------------------|
+| Date     | Trade date (YYYY-MM-DD)                  |
+| Symbol   | Trading symbol                           |
+| Type     | Trade type (Long or Short)               |
+| Size     | Position size (number of shares/contracts)|
+| Entry    | Entry price                              |
+| Exit     | Exit price                               |
+| P&L      | Profit/Loss amount                       |
+| P&L %    | Profit/Loss percentage                   |
+| Notes    | Optional notes about the trade           |
+
+
 ## API Documentation
 
 The backend API is documented using OpenAPI (Swagger) and can be accessed at:
