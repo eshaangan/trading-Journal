@@ -82,6 +82,19 @@ A comprehensive full-stack trading journal application built with Python (FastAP
    http://localhost:8081
    ```
 
+## Sample Data
+
+A sample trades file (`fundedtest.csv`) is included in the repository to help you get started. You can use this file to:
+
+1. Test the import functionality
+2. See the expected CSV format
+3. Explore the analytics features with real trade data
+
+To use the sample data:
+1. Navigate to the Import Data page
+2. Click on "Choose File" and select `fundedtest.csv`
+3. Click "Import" to load the sample trades
+
 ## API Documentation
 
 The backend API is documented using OpenAPI (Swagger) and can be accessed at:
