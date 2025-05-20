@@ -40,7 +40,7 @@ A comprehensive full-stack trading journal application built with Python (FastAP
 - NumPy for calculations
 
 ### Frontend
-- Vanilla JavaScript
+- JavaScript
 - HTML5
 - CSS3
 - Chart.js for data visualization
